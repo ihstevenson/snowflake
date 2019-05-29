@@ -16,8 +16,8 @@ elseif ~issorted(A) || ~issorted(B) || ~issorted(C)
 end
 
 % rough estimate of # of time difference required (assuming independence)
-eN = ceil((mean([n1, n2, n3]))^3 * 2*L * 2 / min([A(end), B(end), C(end)]));
-trips = zeros(10 * eN, 3);
+eN = ceil(prod([n1, n2, n3]/max([A(end), B(end), C(end)])) * 2*L * 2);
+trips = zeros(eN, 3);
 
 % Compute all the time differences within the range L
 lastStartIdx = 1;
