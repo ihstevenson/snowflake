@@ -6,7 +6,7 @@ Generating and visualizing "snowflake" plots for triplet spike patterns as in
 
 ## typical use cases
 
-Give vectors of spike times from three neurons (`A`, `B`, and `C`) and a time window `L` with the same units
+Given vectors of spike times from three neurons (`A`, `B`, and `C`) and a time window `L` with the same units
 
 ```matlab
 [xy,trips]=snowflake(A,B,C,L);
@@ -16,4 +16,4 @@ returns the 2D positions of all triplets on the snowflake plots `xy` and the ind
 
 ## visualization
 
-![snowflake_demo.png](https://raw.githubusercontent.com/ihstevenson/snowflake/master/snowflake_demo.png)
+![snowflake_demo.png](snowflake_demo.png)
