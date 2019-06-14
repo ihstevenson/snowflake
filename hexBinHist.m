@@ -8,21 +8,14 @@ if nargin<7, bound=Inf; end
 if nargin<8, rscale=[min(dat); range(dat)]; end
 
 % Hexagonal grid
-% [X Y] = meshgrid(0:(nbin+(1-mod(nbin,2))));
-% [X Y] = meshgrid(-2:(nbin+3));
-xp = linspace(-1.5,1.5,nbin);
+xp = linspace(-1.5,1.5,4*nbin-1);
 [X, Y] = meshgrid(xp);
 n = size(X,1);
 X = sqrt(3) / 2 * X;
 Yshift = repmat([mean(diff(xp))/2 0],ceil([n,n/2]));
 Y = Y + Yshift(:,1:size(Y,2));
-% X = X/max(X(:));
-% Y = Y/max(Y(:));
-% X=X/nbin;
-% Y=Y/nbin;
 xc = [X(:) Y(:)];
-% xc = xc(xc(:,1)>0 & xc(:,1)<1,:);
-% xc = xc(xc(:,2)>0 & xc(:,2)<1,:);
+xc = xc*[cos(pi/6) -sin(pi/6); sin(pi/6) cos(pi/6)];
 
 % Rescale data
 ds = bsxfun(@minus,dat,rscale(1,:));
@@ -45,11 +38,11 @@ n(n<th)=0;
 
 xci = bsxfun(@times,xc,rscale(2,:));
 xci = bsxfun(@plus,xci,rscale(1,:));
-n(abs(xci(:,2))>bound)=NaN;
+n(abs(xci(:,2))>bound+eps)=NaN;
 xci = xci*[cos(pi/3) -sin(pi/3); sin(pi/3) cos(pi/3)];
-n(abs(xci(:,2))>bound)=NaN;
+n(abs(xci(:,2))>bound+eps)=NaN;
 xci = xci*[cos(pi/3) -sin(pi/3); sin(pi/3) cos(pi/3)];
-n(abs(xci(:,2))>bound)=NaN;
+n(abs(xci(:,2))>bound+eps)=NaN;
 
 % Plot hexagonal bins
 if doPlot
@@ -57,14 +50,14 @@ if doPlot
     [v,c]=voronoin(xc);
     v = bsxfun(@times,v,rscale(2,:));
     v = bsxfun(@plus,v,rscale(1,:));
-    for i = 1:length(c)
-        if all(c{i}~=1)&& length(c{i})==6   % closed, hexagonal patches only
-            if doPlot==1
-                patch(v(c{i},1),v(c{i},2),n(i),'EdgeColor',eCol);
-            elseif doPlot==2 && n(i)>0  % in mode 2 don't plot empy bins
-                patch(v(c{i},1),v(c{i},2),n(i),'EdgeColor',eCol);
-            end
-        end
+    if doPlot==1
+        selected_hexes = cellfun(@length,c)==6;
+    elseif doPlot==2
+        selected_hexes = cellfun(@length,c)==6 & n>0;
     end
-    box off
+    pts = cell2mat(c(selected_hexes));
+    xm = reshape(v(pts(:),1),size(pts));
+    ym = reshape(v(pts(:),2),size(pts));
+    patch(xm',ym',n(selected_hexes),'EdgeColor',eCol)
+        box off
 end
